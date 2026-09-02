@@ -168,18 +168,15 @@ function Home() {
     if (!pkg) return;
     setSharing(true);
     try {
-      // The lesson travels inside the link hash, so students open the game
-      // instantly with no account and no lookup.
-      // A real DB token is required so student results link back to this lesson.
+      // A short link: the lesson lives in the database under this token,
+      // so student results always link back to the right lesson.
       const res = await share({
         data: {
           title: pkg.title || t.lessonTitle,
           package: { ...pkg, hideMascots: getHideMascots() } as never,
         },
       });
-      const token = res.token;
-      const { encodeLessonToHash } = await import("@/lib/share-link");
-      const url = `${window.location.origin}/s/${token}#d=${encodeLessonToHash({ ...pkg, hideMascots: getHideMascots() })}`;
+      const url = `${window.location.origin}/s/${res.token}`;
       await navigator.clipboard.writeText(url);
       toast.success(lang === "ar" ? "تم نسخ رابط المشاركة ✅" : "Share link copied ✅");
     } catch (error) {
