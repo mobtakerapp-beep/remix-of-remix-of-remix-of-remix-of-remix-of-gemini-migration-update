@@ -43,9 +43,6 @@ import { getLessonById, saveLesson } from "@/lib/lessons.functions";
 import { getHideMascots } from "@/lib/display-prefs";
 import { createShare } from "@/lib/shares.functions";
 import type { LessonPackage } from "@/lib/lesson-types";
-import { useGeneration } from "@/lib/subscription.functions";
-
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
