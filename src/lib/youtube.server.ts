@@ -269,13 +269,16 @@ export async function transcribeYoutubeAudio(videoId: string, apiKey?: string): 
       model: "openai/gpt-4o-transcribe",
       gemini: false,
     });
-  if (geminiKey)
+  if (geminiKey) {
+    const { DEFAULT_GEMINI_MODEL, geminiGenerateUrl } = await import("./ai-models");
+    const model = getRuntimeSecret("GEMINI_MODEL") ?? DEFAULT_GEMINI_MODEL;
     providers.push({
-      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+      url: geminiGenerateUrl(model),
       key: geminiKey,
-      model: "gemini-3.6-flash",
+      model,
       gemini: true,
     });
+  }
   if (providers.length === 0) throw new Error("youtube_transcription_unavailable");
 
 
