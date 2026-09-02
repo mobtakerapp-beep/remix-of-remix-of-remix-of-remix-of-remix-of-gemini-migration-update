@@ -106,7 +106,6 @@ function Home() {
       const result = await generate({ data: args });
       setPkg(result);
       setSavedLessonId(null);
-      void markUsage({ data: undefined } as never).catch(() => {});
       toast.success(t.done);
       setTimeout(
         () => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }),
