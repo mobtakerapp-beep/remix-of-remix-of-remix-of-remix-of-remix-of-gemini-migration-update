@@ -150,3 +150,35 @@ export const listShareResults = createServerFn({ method: "GET" })
       results: all.filter((x) => x.shareToken === String(r["token"])),
     }));
   });
+
+/** Owner-only: delete a single student result from one of the teacher's shares. */
+export const deleteShareResult = createServerFn({ method: "POST" })
+  .middleware([requireAppAuth])
+  .validator((input: unknown) => z.object({ resultId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    // Verify the result belongs to a share owned by this teacher before deleting.
+    const { data: shares, error: shareErr } = await context.supabase
+      .from("lesson_shares" as never)
+      .select("token")
+      .eq("user_id", context.userId);
+    if (shareErr) throw new Error(shareErr.message);
+    const tokens = ((shares ?? []) as unknown as Record<string, unknown>[]).map((r) =>
+      String(r["token"]),
+    );
+
+    const { data: rows, error: findErr } = await context.supabase
+      .from("lesson_share_results" as never)
+      .select("id")
+      .eq("id", data.resultId)
+      .in("share_token", tokens)
+      .maybeSingle();
+    if (findErr) throw new Error(findErr.message);
+    if (!rows) throw new Error("not_found_or_unauthorized");
+
+    const { error } = await context.supabase
+      .from("lesson_share_results" as never)
+      .delete()
+      .eq("id", data.resultId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

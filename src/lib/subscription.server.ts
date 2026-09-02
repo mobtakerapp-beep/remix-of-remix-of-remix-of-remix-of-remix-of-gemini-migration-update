@@ -19,6 +19,10 @@ export type SubscriptionStatus = {
 const FREE_DAILY_LIMIT = 3;
 const PAID_LIMIT = 999999;
 
+/** Hard daily cap backed by ai_generation_log (abuse protection). */
+const FREE_GENERATION_LOG_CAP = 10;
+const PAID_GENERATION_LOG_CAP = 300;
+
 function isSameDay(a: Date, b: Date) {
   return (
     a.getUTCFullYear() === b.getUTCFullYear() &&
@@ -147,6 +151,35 @@ export async function incrementGenerationUsage(
       reset_at: shouldReset ? now.toISOString() : sub.reset_at,
     })
     .eq("user_id", userId);
+}
+
+export async function checkGenerationLogCap(
+  supabase: SupabaseClient,
+  userId: string,
+  plan: "free" | "monthly" | "yearly",
+): Promise<{ ok: boolean; count: number; cap: number }> {
+  const { data: count, error } = await supabase.rpc("count_generations_today", {
+    _user_id: userId,
+  });
+  if (error) {
+    // If the RPC fails open, we still allow generation but surface it in logs.
+    console.error("count_generations_today failed", error);
+    return { ok: true, count: 0, cap: plan === "free" ? FREE_GENERATION_LOG_CAP : PAID_GENERATION_LOG_CAP };
+  }
+  const cap = plan === "free" ? FREE_GENERATION_LOG_CAP : PAID_GENERATION_LOG_CAP;
+  return { ok: (count ?? 0) < cap, count: count ?? 0, cap };
+}
+
+export async function logGeneration(
+  supabase: SupabaseClient,
+  userId: string,
+  mode: string,
+): Promise<void> {
+  const { error } = await supabase.from("ai_generation_log" as never).insert({
+    user_id: userId,
+    mode,
+  } as never);
+  if (error) console.error("ai_generation_log insert failed", error);
 }
 
 export async function updateProfile(

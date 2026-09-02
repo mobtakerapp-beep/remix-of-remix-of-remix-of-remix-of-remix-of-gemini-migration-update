@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { requireAppAuth } from "@/lib/app-auth-middleware";
 import { getRuntimeSecret } from "./runtime-env.server";
-import { getSubscriptionStatus } from "./subscription.server";
+import {
+  checkGenerationLogCap,
+  getSubscriptionStatus,
+  logGeneration,
+} from "./subscription.server";
 
 const InputSchema = z.object({
   mode: z.enum(["text", "pdf", "image", "youtube"]),
@@ -33,9 +37,20 @@ export const generateLessonPackage = createServerFn({ method: "POST" })
       throw new Error(status.plan === "free" ? "limit_reached" : "subscription_expired");
     }
 
+    // Hard daily cap from generation log (protects API keys from abuse)
+    const { ok: withinCap, count, cap } = await checkGenerationLogCap(
+      context.supabase,
+      context.userId,
+      status.plan,
+    );
+    if (!withinCap) {
+      throw new Error("daily_log_cap_reached");
+    }
+
     const { buildLessonPackage, resolveAiConfigs } = await import("./lesson.server");
     const providers = resolveAiConfigs();
 
+    let result: Awaited<ReturnType<typeof buildLessonPackage>>;
     if (data.mode === "youtube") {
       const { fetchYoutubeTranscript } = await import("./youtube.server");
       // Direct transcription fallback uses Google Gemini; never send the Lovable key there.
@@ -44,9 +59,23 @@ export const generateLessonPackage = createServerFn({ method: "POST" })
 
 
       const { youtubeUrl: _ignored, ...rest } = data;
-      return buildLessonPackage({ ...rest, mode: "text", text: `${title}\n\n${text}` }, providers);
+      result = await buildLessonPackage(
+        { ...rest, mode: "text", text: `${title}\n\n${text}` },
+        providers,
+      );
+    } else {
+      const { youtubeUrl: _unused, ...payload } = data;
+      result = await buildLessonPackage(payload as never, providers);
     }
 
-    const { youtubeUrl: _unused, ...payload } = data;
-    return buildLessonPackage(payload as never, providers);
+    // Log successful generation and bump the subscription counter
+    await Promise.all([
+      logGeneration(context.supabase, context.userId, data.mode),
+      // Keep legacy counter in sync so the subscription status stays accurate
+      import("./subscription.server").then(({ incrementGenerationUsage }) =>
+        incrementGenerationUsage(context.supabase, context.userId),
+      ),
+    ]);
+
+    return result;
   });

@@ -43,9 +43,6 @@ import { getLessonById, saveLesson } from "@/lib/lessons.functions";
 import { getHideMascots } from "@/lib/display-prefs";
 import { createShare } from "@/lib/shares.functions";
 import type { LessonPackage } from "@/lib/lesson-types";
-import { useGeneration } from "@/lib/subscription.functions";
-
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -69,7 +66,6 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const generate = useServerFn(generateLessonPackage);
-  const markUsage = useServerFn(useGeneration);
   const save = useServerFn(saveLesson);
   const loadById = useServerFn(getLessonById);
   const share = useServerFn(createShare);
@@ -110,7 +106,6 @@ function Home() {
       const result = await generate({ data: args });
       setPkg(result);
       setSavedLessonId(null);
-      void markUsage({ data: undefined } as never).catch(() => {});
       toast.success(t.done);
       setTimeout(
         () => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }),
@@ -118,7 +113,7 @@ function Home() {
       );
     } catch (error) {
       const msg = error instanceof Error ? error.message : "";
-      if (msg === "limit_reached") {
+      if (msg === "limit_reached" || msg === "daily_log_cap_reached") {
         toast.error(t.limitReached);
       } else if (msg === "subscription_expired") {
         toast.error(t.subscriptionExpired);
