@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import logoUrl from "@/assets/logo.png";
 import { PlayTab, type PlayResult } from "@/components/PlayTab";
 import { Button } from "@/components/ui/button";
+import { HideMascotsToggle } from "@/components/HideMascotsToggle";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
