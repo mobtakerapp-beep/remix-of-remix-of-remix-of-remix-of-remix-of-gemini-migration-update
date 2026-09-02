@@ -232,37 +232,41 @@ function Home() {
             <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
               {t.heroSub}
             </p>
-            <div className="mt-6 flex items-center justify-center gap-3 md:justify-start">
-              <img
-                src={catImg}
-                alt={lang === "ar" ? "قطة كرتونية لطيفة" : "Cute cartoon cat"}
-                className="size-16 animate-bounce-slow drop-shadow-md"
-              />
-              <img
-                src={dogImg}
-                alt={lang === "ar" ? "كلب كرتوني لطيف" : "Cute cartoon dog"}
-                className="size-16 animate-wiggle drop-shadow-md"
-              />
-              <img
-                src={partyImg}
-                alt={lang === "ar" ? "حيوان يحتفل" : "Party animal"}
-                className="size-16 animate-float-soft drop-shadow-md"
-              />
-            </div>
+            {!hideMascots && (
+              <div className="mt-6 flex items-center justify-center gap-3 md:justify-start">
+                <img
+                  src={catImg}
+                  alt={lang === "ar" ? "قطة كرتونية لطيفة" : "Cute cartoon cat"}
+                  className="size-16 animate-bounce-slow drop-shadow-md"
+                />
+                <img
+                  src={dogImg}
+                  alt={lang === "ar" ? "كلب كرتوني لطيف" : "Cute cartoon dog"}
+                  className="size-16 animate-wiggle drop-shadow-md"
+                />
+                <img
+                  src={partyImg}
+                  alt={lang === "ar" ? "حيوان يحتفل" : "Party animal"}
+                  className="size-16 animate-float-soft drop-shadow-md"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="relative">
-            <div className="absolute inset-6 -z-10 rounded-4xl gradient-warm opacity-30 blur-2xl" />
-            <img
-              src={heroImg}
-              alt={
-                lang === "ar"
-                  ? "أطفال يلعبون ويتعلمون مع حيوانات لطيفة"
-                  : "Kids learning and playing with cute animals"
-              }
-              className="mx-auto w-full max-w-md animate-float-soft rounded-4xl shadow-[var(--shadow-lift)]"
-            />
-          </div>
+          {!hideMascots && (
+            <div className="relative">
+              <div className="absolute inset-6 -z-10 rounded-4xl gradient-warm opacity-30 blur-2xl" />
+              <img
+                src={heroImg}
+                alt={
+                  lang === "ar"
+                    ? "أطفال يلعبون ويتعلمون مع حيوانات لطيفة"
+                    : "Kids learning and playing with cute animals"
+                }
+                className="mx-auto w-full max-w-md animate-float-soft rounded-4xl shadow-[var(--shadow-lift)]"
+              />
+            </div>
+          )}
         </div>
       </section>
 
