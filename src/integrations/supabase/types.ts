@@ -56,6 +56,27 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_generation_log: {
+        Row: {
+          created_at: string
+          id: string
+          mode: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mode: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       code_redemptions: {
         Row: {
           code_id: string
@@ -229,6 +250,7 @@ export type Database = {
     }
     Functions: {
       bootstrap_account: { Args: { _user_id: string }; Returns: undefined }
+      count_generations_today: { Args: { _user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
