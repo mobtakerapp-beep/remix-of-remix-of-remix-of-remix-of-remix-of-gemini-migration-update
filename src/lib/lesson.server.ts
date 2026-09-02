@@ -1,3 +1,9 @@
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GROQ_MODEL,
+  DEFAULT_OPENROUTER_MODEL,
+  geminiGenerateUrl,
+} from "./ai-models";
 import { uid, type LessonPackage } from "./lesson-types";
 import { getRuntimeSecret } from "./runtime-env.server";
 
@@ -253,11 +259,12 @@ export function resolveAiConfigs(): AiConfig[] {
   // 1. Gemini (Primary)
   const geminiKey = getRuntimeSecret("GEMINI_API_KEY");
   if (geminiKey) {
+    const model = getRuntimeSecret("GEMINI_MODEL") ?? DEFAULT_GEMINI_MODEL;
     configs.push({
       provider: "gemini",
-      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+      url: geminiGenerateUrl(model),
       key: geminiKey,
-      model: "gemini-3.6-flash",
+      model,
       multimodal: true,
     });
   }
@@ -269,7 +276,7 @@ export function resolveAiConfigs(): AiConfig[] {
       provider: "groq",
       url: "https://api.groq.com/openai/v1/chat/completions",
       key: groqKey,
-      model: "llama-3.3-70b-versatile",
+      model: getRuntimeSecret("GROQ_MODEL") ?? DEFAULT_GROQ_MODEL,
       // Text-only model: it cannot read images/PDF attachments.
       multimodal: false,
     });
@@ -282,10 +289,11 @@ export function resolveAiConfigs(): AiConfig[] {
       provider: "openrouter",
       url: "https://openrouter.ai/api/v1/chat/completions",
       key: openRouterKey,
-      model: "google/gemini-3.6-flash",
+      model: getRuntimeSecret("OPENROUTER_MODEL") ?? DEFAULT_OPENROUTER_MODEL,
       multimodal: true,
     });
   }
+
 
   if (configs.length === 0) {
     throw new Error(
