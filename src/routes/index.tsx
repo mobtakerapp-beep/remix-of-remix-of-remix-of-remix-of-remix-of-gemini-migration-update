@@ -66,7 +66,6 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const generate = useServerFn(generateLessonPackage);
-  const markUsage = useServerFn(useGeneration);
   const save = useServerFn(saveLesson);
   const loadById = useServerFn(getLessonById);
   const share = useServerFn(createShare);
