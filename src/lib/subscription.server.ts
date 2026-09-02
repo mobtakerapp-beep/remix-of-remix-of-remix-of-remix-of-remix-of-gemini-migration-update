@@ -19,6 +19,10 @@ export type SubscriptionStatus = {
 const FREE_DAILY_LIMIT = 3;
 const PAID_LIMIT = 999999;
 
+/** Hard daily cap backed by ai_generation_log (abuse protection). */
+const FREE_GENERATION_LOG_CAP = 10;
+const PAID_GENERATION_LOG_CAP = 300;
+
 function isSameDay(a: Date, b: Date) {
   return (
     a.getUTCFullYear() === b.getUTCFullYear() &&
