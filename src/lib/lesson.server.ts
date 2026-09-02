@@ -282,7 +282,7 @@ export function resolveAiConfigs(): AiConfig[] {
       provider: "openrouter",
       url: "https://openrouter.ai/api/v1/chat/completions",
       key: openRouterKey,
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-3.6-flash",
       multimodal: true,
     });
   }
