@@ -113,7 +113,7 @@ function Home() {
       );
     } catch (error) {
       const msg = error instanceof Error ? error.message : "";
-      if (msg === "limit_reached") {
+      if (msg === "limit_reached" || msg === "daily_log_cap_reached") {
         toast.error(t.limitReached);
       } else if (msg === "subscription_expired") {
         toast.error(t.subscriptionExpired);
