@@ -41,6 +41,7 @@ import { InstallPWA } from "@/components/InstallPWA";
 import { generateLessonPackage } from "@/lib/lesson.functions";
 import { getLessonById, saveLesson } from "@/lib/lessons.functions";
 import { getHideMascots } from "@/lib/display-prefs";
+import { HideMascotsToggle, useHideMascots } from "@/components/HideMascotsToggle";
 import { createShare } from "@/lib/shares.functions";
 import type { LessonPackage } from "@/lib/lesson-types";
 export const Route = createFileRoute("/")({
