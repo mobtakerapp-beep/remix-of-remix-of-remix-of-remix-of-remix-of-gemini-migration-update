@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import logoUrl from "@/assets/logo.png";
 import { PlayTab, type PlayResult } from "@/components/PlayTab";
 import { Button } from "@/components/ui/button";
+import { HideMascotsToggle } from "@/components/HideMascotsToggle";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
@@ -91,12 +92,15 @@ function SharedLessonPage() {
             {ar ? "مولّد الدروس الذكي" : "Smart Lesson Generator"}
           </span>
         </Link>
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold sm:text-sm"
-        >
-          <Home className="size-4" /> {ar ? "الرئيسية" : "Home"}
-        </Link>
+        <div className="flex items-center gap-2">
+          <HideMascotsToggle />
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold sm:text-sm"
+          >
+            <Home className="size-4" /> {ar ? "الرئيسية" : "Home"}
+          </Link>
+        </div>
       </div>
 
       {state === "loading" && (
