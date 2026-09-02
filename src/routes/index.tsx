@@ -207,6 +207,7 @@ function Home() {
               <Link to="/welcome">{lang === "ar" ? "عن التطبيق" : "About"}</Link>
             </Button>
             <AuthHeader />
+            <HideMascotsToggle />
             <InstallPWA />
             <Button
               variant="secondary"
