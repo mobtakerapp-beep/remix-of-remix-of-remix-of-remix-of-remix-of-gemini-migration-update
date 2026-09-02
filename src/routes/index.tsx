@@ -77,6 +77,7 @@ function Home() {
   const [savedLessonId, setSavedLessonId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const hideMascots = useHideMascots();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
