@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { requireAppAuth } from "@/lib/app-auth-middleware";
 import { getRuntimeSecret } from "./runtime-env.server";
-import { getSubscriptionStatus } from "./subscription.server";
+import {
+  checkGenerationLogCap,
+  getSubscriptionStatus,
+  logGeneration,
+} from "./subscription.server";
 
 const InputSchema = z.object({
   mode: z.enum(["text", "pdf", "image", "youtube"]),
